@@ -1,0 +1,20 @@
+{
+  "name": "geospatial-benchmark",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
+  },
+  "license": "CC BY-SA 4.0",
+  "dependencies": {
+    "csv": "^6.3.1",
+    "mongoose": "^7.4.0"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "nodemon": "^3.0.1",
+    "typescript": "^5.1.6"
+  }
+}

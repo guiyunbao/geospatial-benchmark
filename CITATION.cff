@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use this result, please cite it as below."
+authors:
+- family-names: "Shen"
+  given-names: "LiangXiang"
+  url: "https://github.com/kj415j45"
+title: "geospatial-benchmark"
+version: 1.0.0
+url: "https://github.com/guiyunbao/geospatial-benchmark"
