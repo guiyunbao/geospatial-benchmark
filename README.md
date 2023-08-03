@@ -40,7 +40,8 @@ id,latitude,longitude
 ## Test queries
 
 - Data should be loaded into the database before running the queries.
-  - Allow ~3s for preparation before running query.
+  - Up to 1 minute for preparation before running query.
+    - Warm up is not allowed at this time.
 - Storage cost will be calculated.
   - For memory-storage databases, both memory and persist storage cost will be calculated.
 - In theory, all databases should return the same result.
@@ -50,19 +51,19 @@ Advanced test allows queries to run in parallel, and allows to optimized for tes
 
 ### Query A: Find nearest location
 
-Pick a random location from the dataset, find the closest location in the dataset.
+Pick a random location, find the closest location in the dataset.
 
 Query will be run 10000 times.
 
 ### Query B: Find locations within a radius
 
-Pick a random location from the dataset, find all locations within 1000km.
+Pick a random location from the dataset, find all locations within certain distance.
 
 Query will be run 5000 times.
 
 ### Query C: Find locations within a radius and order them.
 
-Pick a random location from the dataset, find all locations within 100km, order by distance.
+Pick a random location from the dataset, find all locations within certain distance, order by distance.
 
 Query will be run 5000 times.
 
