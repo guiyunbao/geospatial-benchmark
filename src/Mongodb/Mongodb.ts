@@ -51,16 +51,21 @@ export class MongoDB extends TestDatabase {
   }
 
   async queryA(lng: Longitude, lat: Latitude): Promise<TestData> {
-    const location = await LocationModel.findOne({
-      location: {
-        $near: {
-          $geometry: {
-            type: "Point",
-            coordinates: [lng, lat],
+    const location = await LocationModel.findOne(
+      {
+        location: {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: [lng, lat],
+            },
           },
         },
       },
-    });
+      {
+        _id: 0,
+      }
+    );
     return transformLocation(location!);
   }
 
@@ -69,17 +74,22 @@ export class MongoDB extends TestDatabase {
     lat: Latitude,
     maxDistance: number
   ): Promise<TestData[]> {
-    const locations = await LocationModel.find({
-      location: {
-        $near: {
-          $geometry: {
-            type: "Point",
-            coordinates: [lng, lat],
+    const locations = await LocationModel.find(
+      {
+        location: {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: [lng, lat],
+            },
+            $maxDistance: maxDistance * 1000, // convert to meter
           },
-          $maxDistance: maxDistance * 1000, // convert to meter
         },
       },
-    });
+      {
+        _id: 0,
+      }
+    );
     return locations.map(transformLocation);
   }
 
@@ -89,17 +99,22 @@ export class MongoDB extends TestDatabase {
     lat: Latitude,
     maxDistance: number
   ): Promise<TestData[]> {
-    const locations = await LocationModel.find({
-      location: {
-        $near: {
-          $geometry: {
-            type: "Point",
-            coordinates: [lng, lat],
+    const locations = await LocationModel.find(
+      {
+        location: {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: [lng, lat],
+            },
+            $maxDistance: maxDistance * 1000,
           },
-          $maxDistance: maxDistance * 1000,
         },
       },
-    });
+      {
+        _id: 0,
+      }
+    );
 
     return locations.map(transformLocation);
   }
