@@ -17,7 +17,7 @@ jobs:
       - name: Build
         run: |
           npm ci
-          npm build
+          npm run build
 
       - name: Run benchmark
-        run: npm start
+        run: npm run start

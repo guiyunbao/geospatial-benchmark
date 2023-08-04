@@ -27,10 +27,10 @@ jobs:
       - name: Build
         run: |
           npm ci
-          npm build
+          npm run build
 
       - name: Run benchmark
-        run: npm start -- -t ${{ matrix.dataset }}
+        run: npm run start -- -t ${{ matrix.dataset }}
 
   performance-single:
     name: Performance Test - ${{ inputs.dataset }}
@@ -49,4 +49,4 @@ jobs:
           npm build
 
       - name: Run benchmark
-        run: npm start -- -t ${{ inputs.dataset }}
+        run: npm run start -- -t ${{ inputs.dataset }}
