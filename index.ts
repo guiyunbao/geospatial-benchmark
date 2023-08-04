@@ -19,7 +19,7 @@ const rawData: Array<TestData> = parse(file, {
   columns: (header: any) => ["id", "lat", "lng"],
 });
 
-let data = rawData.slice(0, 10000);
+let data = rawData;
 
 new Promise<void>(async (resolve, reject) => {
   // Setup the databases
