@@ -1,0 +1,52 @@
+name: Performance Test - Dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      dataset:
+        type: choice
+        description: "Dataset to benchmark"
+        required: false
+        default: "inat2017"
+        options: ["all", "inat2017", "random", "grid", "cluster"]
+
+jobs:
+  performance-all:
+    strategy:
+      matrix:
+        dataset: ["inat2017", "random", "grid", "cluster"]
+    name: Performance Test - All - ${{ matrix.dataset }}
+    runs-on: ubuntu-latest
+    if: inputs.dataset == 'all'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup environment
+        run: ./setup.sh
+
+      - name: Build
+        run: |
+          npm ci
+          npm build
+
+      - name: Run benchmark
+        run: npm start -- -t ${{ matrix.dataset }}
+
+  performance-single:
+    name: Performance Test - ${{ inputs.dataset }}
+    runs-on: ubuntu-latest
+    if: inputs.dataset != null && inputs.dataset != 'all'
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup environment
+        run: ./setup.sh
+
+      - name: Build
+        run: |
+          npm ci
+          npm build
+
+      - name: Run benchmark
+        run: npm start -- -t ${{ inputs.dataset }}

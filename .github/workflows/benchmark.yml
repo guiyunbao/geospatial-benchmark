@@ -1,20 +1,23 @@
 name: Benchmark
-
 on:
-  workflow_dispatch:
   push:
     branches: ["main"]
 
 jobs:
-  performance:
-    name: Performance Test
+  performance-CI:
+    name: Performance Test - CI
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
-      
-      - name: Install databases and dependencies
+
+      - name: Setup environment
         run: ./setup.sh
 
+      - name: Build
+        run: |
+          npm ci
+          npm build
+
       - name: Run benchmark
-        run: ./run.sh
+        run: npm start
