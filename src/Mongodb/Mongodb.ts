@@ -45,6 +45,11 @@ export class MongoDB extends TestDatabase {
     await LocationModel.ensureIndexes();
   }
 
+  async usageReport(): Promise<Object> {
+    const stats = await mongoose.connection.db.stats();
+    return JSON.stringify(stats);
+  }
+
   async queryA(lng: Longitude, lat: Latitude): Promise<TestData> {
     const location = await LocationModel.findOne({
       location: {

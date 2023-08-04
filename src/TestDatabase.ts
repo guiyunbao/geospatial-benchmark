@@ -35,6 +35,11 @@ export abstract class TestDatabase {
     abstract prepare(): Promise<void>;
 
     /**
+     * Return the report of the database usage, prefer db/driver's raw format
+     */
+    abstract usageReport(): Promise<object>;
+
+    /**
      * Query A: Find nearest location
      * 
      * Pick a random location, find the closest location in the dataset.

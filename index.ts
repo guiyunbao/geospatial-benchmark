@@ -30,7 +30,8 @@ new Promise<void>(async (resolve, reject) => {
         .then(() => database.cleanup())
         .then(() => database.create(data))
         .then(() => database.prepare())
-        .then(() => console.log(`Database ${database.name()} is ready.`))
+        .then(() => database.usageReport())
+        .then((report) => console.log('Database %s is ready.\nUsage report:\n%s', database.name(), report))
     )
   );
 
