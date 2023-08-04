@@ -4,7 +4,33 @@ import { TestDatabase } from "./src/TestDatabase";
 import b, { add } from "benny";
 import fs from "fs";
 import { TestData } from "./src/TestData";
-import { randomLng, randomLat, Longitude, Latitude } from "./src/utils";
+import {
+  randomLng,
+  randomLat,
+  Longitude,
+  Latitude,
+  shuffle,
+  SampleType,
+  generateSample,
+} from "./src/utils";
+import { Command } from "commander";
+
+const program = new Command("geospatial-benchmark");
+
+program
+  .option(
+    "-t, --type <type>",
+    'type of dataset ["inat2017", "random", "grid", "cluster"]',
+    "inat2017"
+  )
+  .option("-c, --count <count>", "number of data points", "100000")
+  .parse();
+
+const opts = program.opts();
+const sampleType = opts.type;
+const sampleCount = parseInt(opts.count);
+
+console.log("Dataset: %s (%d)", sampleType, sampleCount);
 
 const databases: {
   [key: string]: TestDatabase;
@@ -12,14 +38,25 @@ const databases: {
   mongo: new MongoDB(),
 };
 
-const pwd = process.cwd();
-const testFilePath = pwd + "/datasets/inat2017/inat2017_file_name_to_geo.csv";
-const file = fs.readFileSync(testFilePath, "utf8");
-const rawData: Array<TestData> = parse(file, {
-  columns: (header: any) => ["id", "lat", "lng"],
-});
+let data: Array<TestData>;
 
-let data = rawData;
+switch (sampleType) {
+  case "inat2017": {
+    const pwd = process.cwd();
+    const testFilePath =
+      pwd + "/datasets/inat2017/inat2017_file_name_to_geo.csv";
+    const file = fs.readFileSync(testFilePath, "utf8");
+    const rawData: Array<TestData> = parse(file, {
+      columns: (header: any) => ["id", "lat", "lng"],
+    });
+
+    data = shuffle(rawData).slice(0, sampleCount);
+    break;
+  }
+  default: {
+    data = shuffle(generateSample(sampleType as SampleType, sampleCount));
+  }
+}
 
 new Promise<void>(async (resolve, reject) => {
   // Setup the databases
@@ -31,7 +68,13 @@ new Promise<void>(async (resolve, reject) => {
         .then(() => database.create(data))
         .then(() => database.prepare())
         .then(() => database.usageReport())
-        .then((report) => console.log('Database %s is ready.\nUsage report:\n%s', database.name(), report))
+        .then((report) =>
+          console.log(
+            "Database %s is ready.\nUsage report:\n%s",
+            database.name(),
+            report
+          )
+        )
     )
   );
 
@@ -59,24 +102,24 @@ new Promise<void>(async (resolve, reject) => {
   lng = randomLng();
   lat = randomLat();
   console.log("\n\nQuery A\nlng: %f, lat: %f", lng, lat);
-  for(const database of Object.values(databases)) {
+  for (const database of Object.values(databases)) {
     let data = await database.queryA(lng, lat);
     console.log("%s => %s", database.name(), data);
   }
-  await b.suite(
-    "Query A",
-    ...testQueryA(lng, lat),
-    b.cycle(),
-    b.complete()
-  );
+  await b.suite("Query A", ...testQueryA(lng, lat), b.cycle(), b.complete());
 
   // Query B case
   testPoint = data[Math.floor(Math.random() * data.length)];
   lng = testPoint.lng;
   lat = testPoint.lat;
   distance = Math.random() * 100;
-  console.log("\n\nQuery B\nlng: %f, lat: %f, distance: %f km", lng, lat, distance);
-  for(const database of Object.values(databases)) {
+  console.log(
+    "\n\nQuery B\nlng: %f, lat: %f, distance: %f km",
+    lng,
+    lat,
+    distance
+  );
+  for (const database of Object.values(databases)) {
     let data = await database.queryB(lng, lat, 100);
     console.log("%s => %d", database.name(), data.length);
   }
@@ -92,10 +135,20 @@ new Promise<void>(async (resolve, reject) => {
   lng = testPoint.lng;
   lat = testPoint.lat;
   distance = Math.random() * 100;
-  console.log("\n\nQuery C\nlng: %f, lat: %f, distance: %f km", lng, lat, distance);
-  for(const database of Object.values(databases)) {
+  console.log(
+    "\n\nQuery C\nlng: %f, lat: %f, distance: %f km",
+    lng,
+    lat,
+    distance
+  );
+  for (const database of Object.values(databases)) {
     let data = await database.queryC(lng, lat, 100);
-    console.log("%s => %d => %s", database.name(), data.length, data[data.length - 1]);
+    console.log(
+      "%s => %d => %s",
+      database.name(),
+      data.length,
+      data[data.length - 1]
+    );
   }
   await b.suite(
     "Query C",

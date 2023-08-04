@@ -17,7 +17,7 @@
 
 ## Test dataset
 
-### [visipedia/fg_geo](https://github.com/visipedia/fg_geo)
+By default, this benchmark uses [iNaturalist 2017](https://www.kaggle.com/c/inaturalist-challenge-at-fgvc-2017)'s [Fine Grained Geolocation Datasets (visipedia/fg_geo)](https://github.com/visipedia/fg_geo). Which contains 654,818 records of geolocation point.
 
 File was placed at `datasets/inat2017/inat2017_file_name_to_geo.csv`.
 
@@ -27,15 +27,15 @@ Format:
 filename,latitude,longitude
 ```
 
-### Manually generated dataset
+We also provide 3 other runtime generated datasets:
 
-File was placed at `datasets/locations.csv`.
-
-Format:
-
-```csv
-id,latitude,longitude
-```
+- Random
+  - Points are totally placed by RNG.
+- Grid
+  - Points separated evenly around the earth.
+  - Using [Fibonacci sphere algorithm](https://arxiv.org/abs/0912.4540).
+- Cluster
+  - Every 50 points will be placed together with a bit offset as a cluster, and all clusters will be placed randomly.
 
 ## Test queries
 
