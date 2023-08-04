@@ -5,7 +5,7 @@ on:
       dataset:
         type: choice
         description: "Dataset to benchmark"
-        required: false
+        required: true
         default: "inat2017"
         options: ["all", "inat2017", "random", "grid", "cluster"]
 

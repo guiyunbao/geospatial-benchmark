@@ -1,4 +1,4 @@
-name: Benchmark
+name: Performance Test - CI
 on:
   push:
     branches: ["main"]
