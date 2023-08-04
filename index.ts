@@ -30,8 +30,6 @@ const opts = program.opts();
 const sampleType = opts.type;
 const sampleCount = parseInt(opts.count);
 
-console.log("Dataset: %s (%d)", sampleType, sampleCount);
-
 const databases: {
   [key: string]: TestDatabase;
 } = {
@@ -57,6 +55,9 @@ switch (sampleType) {
     data = shuffle(generateSample(sampleType as SampleType, sampleCount));
   }
 }
+
+console.log("Dataset: %s (%d)", sampleType, data.length);
+
 
 new Promise<void>(async (resolve, reject) => {
   // Setup the databases

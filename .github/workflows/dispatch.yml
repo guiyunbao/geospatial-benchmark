@@ -8,6 +8,11 @@ on:
         required: true
         default: "inat2017"
         options: ["all", "inat2017", "random", "grid", "cluster"]
+      count:
+        type: number
+        description: "Number of points to benchmark"
+        required: true
+        default: 100000
 
 jobs:
   performance-all:
@@ -30,7 +35,7 @@ jobs:
           npm run build
 
       - name: Run benchmark
-        run: npm run start -- -t ${{ matrix.dataset }}
+        run: npm run start -- -t ${{ matrix.dataset }} -c ${{ inputs.count }}
 
   performance-single:
     name: Performance Test - ${{ inputs.dataset }}
@@ -49,4 +54,4 @@ jobs:
           npm build
 
       - name: Run benchmark
-        run: npm run start -- -t ${{ inputs.dataset }}
+        run: npm run start -- -t ${{ inputs.dataset }} -c ${{ inputs.count }}

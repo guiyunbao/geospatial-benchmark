@@ -1,4 +1,4 @@
-# Benchmark geospatial query speed on NoSQL(-like) databases
+# Benchmark geospatial query performance on NoSQL(-like) databases
 
 ## Test Environment
 
@@ -11,6 +11,16 @@
 - Host
   - [GitHub Codespaces](https://docs.github.com/en/codespaces)
   - [GitHub Actions](https://docs.github.com/en/actions)
+
+## Run Benchmarks
+
+```sh
+npm run start [-- [options]]
+
+Options:
+  -t, --type <type>    type of dataset ["inat2017", "random", "grid", "cluster"] (default: "inat2017")
+  -c, --count <count>  number of data points (default: "100000")
+```
 
 ## Test dataset
 
