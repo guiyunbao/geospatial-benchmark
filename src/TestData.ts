@@ -1,6 +1,4 @@
-
-type Longitude = number;
-type Latitude = number;
+import { Longitude, Latitude } from "./utils";
 
 export type TestData = {
     id: string;

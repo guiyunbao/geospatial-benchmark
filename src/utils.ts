@@ -8,3 +8,6 @@ export function randomLng() {
 export function randomLat() {
   return Math.random() * 180 - 90;
 }
+
+export type Longitude = number;
+export type Latitude = number;

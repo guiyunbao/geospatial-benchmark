@@ -3,7 +3,7 @@ import { TestData } from "../TestData";
 import { TestDatabase } from "../TestDatabase";
 import { LocationModel } from "./Locations";
 import { transformLocation, transformTestData } from "./Transformer";
-import { delay } from "../utils";
+import { Latitude, Longitude, delay } from "../utils";
 
 export class MongoDB extends TestDatabase {
   uri?: string;
@@ -45,7 +45,7 @@ export class MongoDB extends TestDatabase {
     await LocationModel.ensureIndexes();
   }
 
-  async queryA(lng: number, lat: number): Promise<TestData> {
+  async queryA(lng: Longitude, lat: Latitude): Promise<TestData> {
     const location = await LocationModel.findOne({
       location: {
         $near: {
@@ -60,8 +60,8 @@ export class MongoDB extends TestDatabase {
   }
 
   async queryB(
-    lng: number,
-    lat: number,
+    lng: Longitude,
+    lat: Latitude,
     maxDistance: number
   ): Promise<TestData[]> {
     const locations = await LocationModel.find({
@@ -80,8 +80,8 @@ export class MongoDB extends TestDatabase {
 
   // MongoDB already sorts by distance by default, so we don't need to do anything here.
   async queryC(
-    lng: number,
-    lat: number,
+    lng: Longitude,
+    lat: Latitude,
     maxDistance: number
   ): Promise<TestData[]> {
     const locations = await LocationModel.find({

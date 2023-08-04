@@ -1,4 +1,5 @@
 import { TestData } from "./TestData";
+import { Latitude, Longitude } from "./utils";
 
 export abstract class TestDatabase {
     /**
@@ -40,7 +41,7 @@ export abstract class TestDatabase {
      * @param lng
      * @param lat
      */
-    abstract queryA(lng: number, lat: number): Promise<TestData>;
+    abstract queryA(lng: Longitude, lat: Latitude): Promise<TestData>;
 
     /**
      * Query B: Find locations within a radius
@@ -50,7 +51,7 @@ export abstract class TestDatabase {
      * @param lat 
      * @param maxDistance in kilometer
      */
-    abstract queryB(lng: number, lat: number, maxDistance: number): Promise<Array<TestData>>;
+    abstract queryB(lng: Longitude, lat: Latitude, maxDistance: number): Promise<Array<TestData>>;
 
     /**
      * Query C: Find locations within a radius and order them.
@@ -60,5 +61,5 @@ export abstract class TestDatabase {
      * @param lat 
      * @param maxDistance in kilometer
      */
-    abstract queryC(lng: number, lat: number, maxDistance: number): Promise<Array<TestData>>;
+    abstract queryC(lng: Longitude, lat: Latitude, maxDistance: number): Promise<Array<TestData>>;
 }
