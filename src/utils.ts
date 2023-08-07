@@ -20,11 +20,11 @@ export enum SampleType {
   Cluster = "cluster",
 }
 
-function standarizeLng(lng: Longitude) {
+function standardizeLng(lng: Longitude) {
   return lng > 180 ? lng - 360 : lng < -180 ? lng + 360 : lng;
 }
 
-function standarizeLat(lat: Latitude) {
+function standardizeLat(lat: Latitude) {
   return lat > 90 ? lat - 180 : lat < -90 ? lat + 180 : lat;
 }
 
@@ -73,7 +73,7 @@ export function generateSample(
     }
     case SampleType.Cluster: {
       const chunkSize = 50;
-      let villages = Array.from({ length: count / chunkSize + 1 }, (_, i) => {
+      let villages = Array.from({ length: count / chunkSize + 1 }, () => {
         return {
           lng: randomLng(),
           lat: randomLat(),
@@ -81,14 +81,14 @@ export function generateSample(
       });
       return Array.from({ length: count }, (_, i) => {
         const baseOffset = 0.0001;
-        let offsetLng = Math.random() * baseOffset - baseOffset * 0.5;
-        let offsetLat = Math.random() * baseOffset - baseOffset * 0.5;
+        let offsetLng = baseOffset * (Math.random() - 0.5);
+        let offsetLat = baseOffset * (Math.random() - 0.5);
         return {
           id: i.toString(),
-          lng: standarizeLng(
+          lng: standardizeLng(
             villages[Math.floor(i / chunkSize)].lng + offsetLng
           ),
-          lat: standarizeLat(
+          lat: standardizeLat(
             villages[Math.floor(i / chunkSize)].lat + offsetLat
           ),
         };
