@@ -121,12 +121,12 @@ new Promise<void>(async (resolve, reject) => {
     distance
   );
   for (const database of Object.values(databases)) {
-    let data = await database.queryB(lng, lat, 100);
+    let data = await database.queryB(lng, lat, distance);
     console.log("%s => %d", database.name(), data.length);
   }
   await b.suite(
     "Query B",
-    ...testQueryB(lng, lat, 100),
+    ...testQueryB(lng, lat, distance),
     b.cycle(),
     b.complete()
   );
@@ -143,7 +143,7 @@ new Promise<void>(async (resolve, reject) => {
     distance
   );
   for (const database of Object.values(databases)) {
-    let data = await database.queryC(lng, lat, 100);
+    let data = await database.queryC(lng, lat, distance);
     console.log(
       "%s => %d => %s",
       database.name(),
@@ -153,7 +153,7 @@ new Promise<void>(async (resolve, reject) => {
   }
   await b.suite(
     "Query C",
-    ...testQueryC(lng, lat, 100),
+    ...testQueryC(lng, lat, distance),
     b.cycle(),
     b.complete()
   );
