@@ -53,7 +53,13 @@ export class redis extends TestDatabase {
     const closestLimit = 100;
     let query = `@location:[${lng},${lat},${closestLimit},km]`
     const location = await this.repository?.searchRaw(query).returnFirst();
-    return transformLocation(location! as any);
+    return transformLocation(location! as any ?? {
+      id: `Out_Of_Range(${closestLimit}km)`,
+      location: {
+        longitude: 0,
+        latitude: 0
+      },
+    });
   }
 
   async queryB(
@@ -63,7 +69,7 @@ export class redis extends TestDatabase {
   ): Promise<TestData[]> {
     let query = `@location:[${lng},${lat},${maxDistance},km]`
     const locations = await this.repository?.searchRaw(query).returnAll();
-    return ((locations ?? []) as any).map(transformLocation);
+    return (locations as any).map(transformLocation);
   }
 
   async queryC(
@@ -73,6 +79,6 @@ export class redis extends TestDatabase {
   ): Promise<TestData[]> {
     let query = `@location:[${lng},${lat},${maxDistance},km]`
     const locations = await this.repository?.searchRaw(query).returnAll();
-    return ((locations ?? []) as any).map(transformLocation);
+    return (locations as any).map(transformLocation);
   }
 }
