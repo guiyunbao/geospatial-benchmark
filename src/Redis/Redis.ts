@@ -45,7 +45,8 @@ export class redis extends TestDatabase {
   }
 
   async usageReport(): Promise<Object> {
-    const stats = await this.redis.info('stats');
+    let stats = await this.redis.info('memory');
+    stats += await this.redis.info('persistence');
     return JSON.stringify(stats);
   }
 

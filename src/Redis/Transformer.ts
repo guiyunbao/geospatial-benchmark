@@ -1,4 +1,5 @@
 import { TestData } from "../TestData";
+import { isValidEPSG3857Lat, randomEPSG3857Lat } from "../utils";
 import { Location } from "./Locations";
 
 /**
@@ -7,10 +8,9 @@ import { Location } from "./Locations";
  */
 export function transformTestData(data: TestData): Location {
     let lat = +data.lat;
-    const latLimit = 85.05112878;
-
-    if( Math.abs(lat) >= latLimit ) {
-        lat = (latLimit * Math.random()) * (Math.random() > 0.5 ? 1 : -1);
+    
+    if( !isValidEPSG3857Lat(lat) ){
+        lat = randomEPSG3857Lat();
     }
 
     return {

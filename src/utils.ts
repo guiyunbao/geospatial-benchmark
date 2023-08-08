@@ -11,9 +11,14 @@ export function randomLat() {
   return Math.random() * 180 - 90;
 }
 
+export const EPSG3857LatLimit = 85.05112878;
+
+export function randomEPSG3857Lat() {
+  return (EPSG3857LatLimit * Math.random()) * (Math.random() > 0.5 ? 1 : -1);
+}
+
 export function isValidEPSG3857Lat(lat: number): boolean {
-  const latLimit = 85.05112878;
-  return Math.abs(lat) < latLimit;
+  return Math.abs(lat) < EPSG3857LatLimit;
 }
 
 export type Longitude = number;

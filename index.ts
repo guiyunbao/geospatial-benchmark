@@ -6,13 +6,13 @@ import fs from "fs";
 import { TestData } from "./src/TestData";
 import {
   randomLng,
-  randomLat,
   Longitude,
   Latitude,
   shuffle,
   SampleType,
   generateSample,
   isValidEPSG3857Lat,
+  randomEPSG3857Lat,
 } from "./src/utils";
 import { Command } from "commander";
 import { redis } from "./src/Redis/Redis";
@@ -104,7 +104,7 @@ new Promise<void>(async (resolve, reject) => {
   let testPoint: TestData;
   // Query A case
   lng = randomLng();
-  lat = randomLat();
+  lat = randomEPSG3857Lat();
   console.log("\n\nQuery A\nlng: %f, lat: %f", lng, lat);
   for (const database of Object.values(databases)) {
     let data = await database.queryA(lng, lat);
