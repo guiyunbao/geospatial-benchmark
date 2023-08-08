@@ -11,6 +11,11 @@ export function randomLat() {
   return Math.random() * 180 - 90;
 }
 
+export function isValidEPSG3857Lat(lat: number): boolean {
+  const latLimit = 85.05112878;
+  return Math.abs(lat) < latLimit;
+}
+
 export type Longitude = number;
 export type Latitude = number;
 

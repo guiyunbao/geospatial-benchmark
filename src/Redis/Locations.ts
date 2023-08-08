@@ -1,4 +1,4 @@
-import { Entity, Schema } from 'redis-om';
+import { Schema } from 'redis-om';
 
 
 export type Location = {

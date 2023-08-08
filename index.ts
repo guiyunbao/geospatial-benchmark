@@ -12,6 +12,7 @@ import {
   shuffle,
   SampleType,
   generateSample,
+  isValidEPSG3857Lat,
 } from "./src/utils";
 import { Command } from "commander";
 import { redis } from "./src/Redis/Redis";
@@ -113,6 +114,9 @@ new Promise<void>(async (resolve, reject) => {
 
   // Query B case
   testPoint = data[Math.floor(Math.random() * data.length)];
+  while( !isValidEPSG3857Lat(testPoint.lat) ){
+    testPoint = data[Math.floor(Math.random() * data.length)];
+  }
   lng = testPoint.lng;
   lat = testPoint.lat;
   distance = Math.random() * 100;
@@ -135,6 +139,9 @@ new Promise<void>(async (resolve, reject) => {
 
   // Query C case
   testPoint = data[Math.floor(Math.random() * data.length)];
+  while( !isValidEPSG3857Lat(testPoint.lat) ){
+    testPoint = data[Math.floor(Math.random() * data.length)];
+  }
   lng = testPoint.lng;
   lat = testPoint.lat;
   distance = Math.random() * 100;
