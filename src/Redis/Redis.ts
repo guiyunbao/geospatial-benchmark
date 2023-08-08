@@ -2,7 +2,7 @@ import { createClient } from 'redis';
 import { TestData } from "../TestData";
 import { TestDatabase } from "../TestDatabase";
 import { transformLocation, transformTestData } from "./Transformer";
-import { Latitude, Longitude, delay } from "../utils";
+import { Latitude, Longitude } from "../utils";
 import { Repository } from 'redis-om';
 import { locationSchema } from './Locations';
 
@@ -14,8 +14,6 @@ export class redis extends TestDatabase {
     super();
     this.uri = uri;
   }
-
-
 
   name(): string {
     return "Redis";
@@ -52,14 +50,10 @@ export class redis extends TestDatabase {
   }
 
   async queryA(lng: Longitude, lat: Latitude): Promise<TestData> {
-    let query = '@location:' + '[' + lng + ','
-      + lat + ',' + 100000 + ',' + 'km' + ']'
+    const closestLimit = 100;
+    let query = `@location:[${lng},${lat},${closestLimit},km]`
     const location = await this.repository?.searchRaw(query).returnFirst();
-    return location ? transformLocation(location as any) : {
-      id: '',
-      lng: 0,
-      lat: 0
-    };
+    return transformLocation(location! as any);
   }
 
   async queryB(
@@ -67,22 +61,18 @@ export class redis extends TestDatabase {
     lat: Latitude,
     maxDistance: number
   ): Promise<TestData[]> {
-    let query = '@location:' + '[' + lng + ','
-      + lat + ',' + maxDistance + ',' + 'km' + ']'
+    let query = `@location:[${lng},${lat},${maxDistance},km]`
     const locations = await this.repository?.searchRaw(query).returnAll();
-
-    return locations && locations?.length > 0 ? (locations as any).map(transformLocation) : [];
+    return ((locations ?? []) as any).map(transformLocation);
   }
 
-  // MongoDB already sorts by distance by default, so we don't need to do anything here.
   async queryC(
     lng: Longitude,
     lat: Latitude,
     maxDistance: number
   ): Promise<TestData[]> {
-    let query = '@location:' + '[' + lng + ','
-      + lat + ',' + maxDistance + ',' + 'km' + ']'
+    let query = `@location:[${lng},${lat},${maxDistance},km]`
     const locations = await this.repository?.searchRaw(query).returnAll();
-    return locations && locations?.length > 0 ? (locations as any).map(transformLocation) : [];
+    return ((locations ?? []) as any).map(transformLocation);
   }
 }
