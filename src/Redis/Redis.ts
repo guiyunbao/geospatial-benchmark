@@ -21,7 +21,7 @@ export class Redis extends TestDatabase {
 
   async connect(uri?: string | undefined): Promise<void> {
     this.redis = createClient({
-      url: uri ?? this.uri ?? "redis://localhost:6379/_benchmark_",
+      url: uri ?? this.uri ?? "redis://localhost:6379/7957", // 7957 -> test
     });
     await this.redis.connect();
     this.repository = new Repository(locationSchema, this.redis);
