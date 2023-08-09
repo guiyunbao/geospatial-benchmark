@@ -16,7 +16,7 @@ export class RedisJson extends TestDatabase {
   }
 
   name(): string {
-    return "Redis";
+    return "RedisJson";
   }
 
   async connect(uri?: string | undefined): Promise<void> {
