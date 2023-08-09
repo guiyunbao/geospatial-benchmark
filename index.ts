@@ -16,6 +16,7 @@ import {
 } from "./src/utils";
 import { Command } from "commander";
 import { RedisJson } from "./src/Redis/RedisJson";
+import { RedisGeohash } from "./src/Redis/RedisGeohash";
 
 const program = new Command("geospatial-benchmark");
 
@@ -39,6 +40,7 @@ const databases: {
 } = {
   mongo: new MongoDB(),
   redisJson: new RedisJson(),
+  redisGeohash: new RedisGeohash()
 };
 
 let data: Array<TestData>;

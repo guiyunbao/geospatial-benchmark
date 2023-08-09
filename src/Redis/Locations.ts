@@ -8,7 +8,14 @@ export type LocationJson = {
     };
 }
 
-export const locationSchema = new Schema("location", {
-  id: { type: "string" },
-  location: { type: "point" },
+export type LocationGeohash = {
+    longitude: number,
+    latitude: number,
+    member: string
+}
+
+
+export const locationSchema = new Schema('location', {
+    id: { type: 'string' },
+    location: { type: 'point' },
 });
