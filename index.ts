@@ -15,7 +15,7 @@ import {
   randomEPSG3857Lat,
 } from "./src/utils";
 import { Command } from "commander";
-import { redis } from "./src/Redis/Redis";
+import { Redis } from "./src/Redis/Redis";
 
 const program = new Command("geospatial-benchmark");
 
@@ -36,7 +36,7 @@ const databases: {
   [key: string]: TestDatabase;
 } = {
   mongo: new MongoDB(),
-  redis: new redis(),
+  redis: new Redis(),
 };
 
 let data: Array<TestData>;
@@ -60,7 +60,6 @@ switch (sampleType) {
 }
 
 console.log("Dataset: %s (%d)", sampleType, data.length);
-
 
 new Promise<void>(async (resolve, reject) => {
   // Setup the databases
@@ -114,7 +113,7 @@ new Promise<void>(async (resolve, reject) => {
 
   // Query B case
   testPoint = data[Math.floor(Math.random() * data.length)];
-  while( !isValidEPSG3857Lat(testPoint.lat) ){
+  while (!isValidEPSG3857Lat(testPoint.lat)) {
     testPoint = data[Math.floor(Math.random() * data.length)];
   }
   lng = testPoint.lng;
@@ -139,7 +138,7 @@ new Promise<void>(async (resolve, reject) => {
 
   // Query C case
   testPoint = data[Math.floor(Math.random() * data.length)];
-  while( !isValidEPSG3857Lat(testPoint.lat) ){
+  while (!isValidEPSG3857Lat(testPoint.lat)) {
     testPoint = data[Math.floor(Math.random() * data.length)];
   }
   lng = testPoint.lng;

@@ -1,12 +1,12 @@
-import { createClient } from 'redis';
+import { createClient } from "redis";
 import { TestData } from "../TestData";
 import { TestDatabase } from "../TestDatabase";
 import { transformLocation, transformTestData } from "./Transformer";
 import { Latitude, Longitude } from "../utils";
-import { Repository } from 'redis-om';
-import { locationSchema } from './Locations';
+import { Repository } from "redis-om";
+import { locationSchema } from "./Locations";
 
-export class redis extends TestDatabase {
+export class Redis extends TestDatabase {
   redis: any;
   repository?: Repository;
   uri?: string;
@@ -20,9 +20,11 @@ export class redis extends TestDatabase {
   }
 
   async connect(uri?: string | undefined): Promise<void> {
-    this.redis = createClient({ url: uri ?? this.uri ?? 'redis://127.0.0.1:6379' })
+    this.redis = createClient({
+      url: uri ?? this.uri ?? "redis://localhost:6379/_benchmark_",
+    });
     await this.redis.connect();
-    this.repository = new Repository(locationSchema, this.redis)
+    this.repository = new Repository(locationSchema, this.redis);
   }
 
   async disconnect(): Promise<void> {
@@ -37,7 +39,7 @@ export class redis extends TestDatabase {
     const docs = data.map(transformTestData);
     let index = 0;
     while (index < docs.length) {
-      await this.repository!.save(docs[index++]!)
+      await this.repository!.save(docs[index++]!);
     }
   }
   async prepare(): Promise<void> {
@@ -45,22 +47,29 @@ export class redis extends TestDatabase {
   }
 
   async usageReport(): Promise<Object> {
-    let stats = await this.redis.info('memory');
-    stats += await this.redis.info('persistence');
+    let stats = await this.redis.info("memory");
+    stats += await this.redis.info("persistence");
     return JSON.stringify(stats);
   }
 
   async queryA(lng: Longitude, lat: Latitude): Promise<TestData> {
     const closestLimit = 100;
-    let query = `@location:[${lng},${lat},${closestLimit},km]`
-    const location = await this.repository?.searchRaw(query).returnFirst();
-    return transformLocation(location! as any ?? {
-      id: `Out_Of_Range(${closestLimit}km)`,
-      location: {
-        longitude: 0,
-        latitude: 0
-      },
-    });
+    const location = await this.repository!.search()
+      .where("location")
+      .inRadius(
+        (circle) =>
+          circle.longitude(lng).latitude(lat).radius(closestLimit).kilometers
+      )
+      .return.first();
+    return transformLocation(
+      (location! as any) ?? {
+        id: `Out_Of_Range(${closestLimit}km)`,
+        location: {
+          longitude: 0,
+          latitude: 0,
+        },
+      }
+    );
   }
 
   async queryB(
@@ -68,8 +77,13 @@ export class redis extends TestDatabase {
     lat: Latitude,
     maxDistance: number
   ): Promise<TestData[]> {
-    let query = `@location:[${lng},${lat},${maxDistance},km]`
-    const locations = await this.repository?.searchRaw(query).returnAll();
+    const locations = await this.repository!.search()
+      .where("location")
+      .inRadius(
+        (circle) =>
+          circle.longitude(lng).latitude(lat).radius(maxDistance).kilometers
+      )
+      .return.first();
     return (locations as any).map(transformLocation);
   }
 
@@ -78,8 +92,13 @@ export class redis extends TestDatabase {
     lat: Latitude,
     maxDistance: number
   ): Promise<TestData[]> {
-    let query = `@location:[${lng},${lat},${maxDistance},km]`
-    const locations = await this.repository?.searchRaw(query).returnAll();
+    const locations = await this.repository!.search()
+      .where("location")
+      .inRadius(
+        (circle) =>
+          circle.longitude(lng).latitude(lat).radius(maxDistance).kilometers
+      )
+      .return.first();
     return (locations as any).map(transformLocation);
   }
 }
