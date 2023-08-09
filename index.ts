@@ -109,7 +109,18 @@ new Promise<void>(async (resolve, reject) => {
     let data = await database.queryA(lng, lat);
     console.log("%s => %s", database.name(), data);
   }
-  await b.suite("Query A", ...testQueryA(lng, lat), b.cycle(), b.complete());
+  await b.suite(
+    "Query A",
+    b.configure({
+      cases: {
+        minSamples: 1000,
+        maxTime: 30,
+      },
+    }),
+    ...testQueryA(lng, lat),
+    b.cycle(),
+    b.complete()
+  );
 
   // Query B case
   testPoint = data[Math.floor(Math.random() * data.length)];
@@ -131,6 +142,12 @@ new Promise<void>(async (resolve, reject) => {
   }
   await b.suite(
     "Query B",
+    b.configure({
+      cases: {
+        minSamples: 1000,
+        maxTime: 30,
+      },
+    }),
     ...testQueryB(lng, lat, distance),
     b.cycle(),
     b.complete()
@@ -161,6 +178,12 @@ new Promise<void>(async (resolve, reject) => {
   }
   await b.suite(
     "Query C",
+    b.configure({
+      cases: {
+        minSamples: 1000,
+        maxTime: 30,
+      },
+    }),
     ...testQueryC(lng, lat, distance),
     b.cycle(),
     b.complete()
