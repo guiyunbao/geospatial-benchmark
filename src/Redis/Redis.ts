@@ -83,7 +83,7 @@ export class Redis extends TestDatabase {
         (circle) =>
           circle.longitude(lng).latitude(lat).radius(maxDistance).kilometers
       )
-      .return.first();
+      .return.all();
     return (locations as unknown as Array<Location>).map(transformLocation);
   }
 
@@ -98,7 +98,7 @@ export class Redis extends TestDatabase {
         (circle) =>
           circle.longitude(lng).latitude(lat).radius(maxDistance).kilometers
       )
-      .return.first();
+      .return.all();
     return (locations as unknown as Array<Location>).map(transformLocation);
   }
 }
