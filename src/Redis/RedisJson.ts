@@ -1,12 +1,12 @@
 import { createClient } from "redis";
 import { TestData } from "../TestData";
 import { TestDatabase } from "../TestDatabase";
-import { transformLocation, transformTestData } from "./Transformer";
 import { Latitude, Longitude } from "../utils";
 import { Repository } from "redis-om";
-import { locationSchema, Location } from "./Locations";
+import { LocationJson, locationSchema } from "./Locations";
+import { transformLocationJson, transformTestDataJson } from "./Transformer";
 
-export class Redis extends TestDatabase {
+export class RedisJson extends TestDatabase {
   redis: any;
   repository?: Repository;
   uri?: string;
@@ -36,7 +36,7 @@ export class Redis extends TestDatabase {
   }
 
   async create(data: Array<TestData>): Promise<void> {
-    const docs = data.map(transformTestData);
+    const docs = data.map(transformTestDataJson);
     let index = 0;
     while (index < docs.length) {
       await this.repository!.save(docs[index++]!);
@@ -61,8 +61,8 @@ export class Redis extends TestDatabase {
           circle.longitude(lng).latitude(lat).radius(closestLimit).kilometers
       )
       .return.first();
-    return transformLocation(
-      (location! as unknown as Location) ?? {
+    return transformLocationJson(
+      (location! as unknown as LocationJson) ?? {
         id: `Out_Of_Range(${closestLimit}km)`,
         location: {
           longitude: 0,
@@ -84,7 +84,7 @@ export class Redis extends TestDatabase {
           circle.longitude(lng).latitude(lat).radius(maxDistance).kilometers
       )
       .return.all();
-    return (locations as unknown as Array<Location>).map(transformLocation);
+    return (locations as unknown as Array<LocationJson>).map(transformLocationJson);
   }
 
   async queryC(
@@ -99,6 +99,6 @@ export class Redis extends TestDatabase {
           circle.longitude(lng).latitude(lat).radius(maxDistance).kilometers
       )
       .return.all();
-    return (locations as unknown as Array<Location>).map(transformLocation);
+    return (locations as unknown as Array<LocationJson>).map(transformLocationJson);
   }
 }

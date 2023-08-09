@@ -1,12 +1,12 @@
 import { Schema } from "redis-om";
 
-export type Location = {
-  id: string;
-  location: {
-    longitude: number;
-    latitude: number;
-  };
-};
+export type LocationJson = {
+    id: string,
+    location: {
+        "longitude": number,
+        "latitude": number
+    };
+}
 
 export const locationSchema = new Schema("location", {
   id: { type: "string" },

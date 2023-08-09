@@ -15,7 +15,7 @@ import {
   randomEPSG3857Lat,
 } from "./src/utils";
 import { Command } from "commander";
-import { Redis } from "./src/Redis/Redis";
+import { RedisJson } from "./src/Redis/RedisJson";
 
 const program = new Command("geospatial-benchmark");
 
@@ -38,7 +38,7 @@ const databases: {
   [key: string]: TestDatabase;
 } = {
   mongo: new MongoDB(),
-  redis: new Redis(),
+  redisJson: new RedisJson(),
 };
 
 let data: Array<TestData>;
