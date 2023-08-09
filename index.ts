@@ -104,10 +104,10 @@ new Promise<void>(async (resolve, reject) => {
   let distance: number;
   let testPoint: TestData;
   let title: string;
-  let repeat = 1;
+  let repeat = 0;
   console.log("Start benchmarking...  (repeat: %d)", benchRepeat);
 
-  while (repeat++ < benchRepeat + 1) {
+  while (++repeat <= benchRepeat) {
     // Query A case
     lng = randomLng();
     lat = randomEPSG3857Lat();
