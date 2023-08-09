@@ -40,7 +40,7 @@ const databases: {
 } = {
   mongo: new MongoDB(),
   redisJson: new RedisJson(),
-  redisGeohash: new RedisGeohash()
+  redisGeohash: new RedisGeohash(),
 };
 
 let data: Array<TestData>;
@@ -124,7 +124,6 @@ new Promise<void>(async (resolve, reject) => {
       title,
       b.configure({
         cases: {
-          minSamples: 20,
           minTime: 5,
           maxTime: 20,
         },
@@ -163,7 +162,6 @@ new Promise<void>(async (resolve, reject) => {
       title,
       b.configure({
         cases: {
-          minSamples: 20,
           minTime: 5,
           maxTime: 20,
         },
@@ -207,7 +205,6 @@ new Promise<void>(async (resolve, reject) => {
       title,
       b.configure({
         cases: {
-          minSamples: 20,
           minTime: 5,
           maxTime: 20,
         },
