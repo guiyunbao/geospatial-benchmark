@@ -3,4 +3,8 @@
 
 /test.*
 
+/results/*.input
+/results/*.json
+/results/*.csv
+
 .env

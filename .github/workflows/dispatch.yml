@@ -13,6 +13,11 @@ on:
         description: "Number of points to benchmark"
         required: true
         default: 100000
+      repeat:
+        type: number
+        description: "Number of times to repeat the benchmark"
+        required: true
+        default: 1
 
 jobs:
   performance-all:
@@ -35,7 +40,14 @@ jobs:
           npm run build
 
       - name: Run benchmark
-        run: npm run start -- -t ${{ matrix.dataset }} -c ${{ inputs.count }}
+        run: npm run start -- -t ${{ matrix.dataset }} -c ${{ inputs.count }} -r ${{ inputs.repeat }}
+
+      - name: Upload Result
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.dataset }}-result
+          path: results
+          retention-days: 1
 
   performance-single:
     name: Performance Test - ${{ inputs.dataset }}
@@ -54,4 +66,11 @@ jobs:
           npm run build
 
       - name: Run benchmark
-        run: npm run start -- -t ${{ inputs.dataset }} -c ${{ inputs.count }}
+        run: npm run start -- -t ${{ inputs.dataset }} -c ${{ inputs.count }} -r ${{ inputs.repeat }}
+
+      - name: Upload Result
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ inputs.dataset }}-result
+          path: results
+          retention-days: 1

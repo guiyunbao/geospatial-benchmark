@@ -26,11 +26,13 @@ program
     "inat2017"
   )
   .option("-c, --count <count>", "number of data points", "100000")
+  .option("-r, --repeat <count>", "number of repeat", "1")
   .parse();
 
 const opts = program.opts();
 const sampleType = opts.type;
 const sampleCount = parseInt(opts.count);
+const benchRepeat = parseInt(opts.repeat);
 
 const databases: {
   [key: string]: TestDatabase;
@@ -101,93 +103,124 @@ new Promise<void>(async (resolve, reject) => {
   let lat: Latitude;
   let distance: number;
   let testPoint: TestData;
-  // Query A case
-  lng = randomLng();
-  lat = randomEPSG3857Lat();
-  console.log("\n\nQuery A\nlng: %f, lat: %f", lng, lat);
-  for (const database of Object.values(databases)) {
-    let data = await database.queryA(lng, lat);
-    console.log("%s => %s", database.name(), data);
-  }
-  await b.suite(
-    "Query A",
-    b.configure({
-      cases: {
-        minSamples: 1000,
-        maxTime: 30,
-      },
-    }),
-    ...testQueryA(lng, lat),
-    b.cycle(),
-    b.complete()
-  );
+  let title: string;
+  let repeat = 1;
+  console.log("Start benchmarking...  (repeat: %d)", benchRepeat);
 
-  // Query B case
-  testPoint = data[Math.floor(Math.random() * data.length)];
-  while (!isValidEPSG3857Lat(testPoint.lat)) {
-    testPoint = data[Math.floor(Math.random() * data.length)];
-  }
-  lng = testPoint.lng;
-  lat = testPoint.lat;
-  distance = Math.random() * 100;
-  console.log(
-    "\n\nQuery B\nlng: %f, lat: %f, distance: %f km",
-    lng,
-    lat,
-    distance
-  );
-  for (const database of Object.values(databases)) {
-    let data = await database.queryB(lng, lat, distance);
-    console.log("%s => %d", database.name(), data.length);
-  }
-  await b.suite(
-    "Query B",
-    b.configure({
-      cases: {
-        minSamples: 1000,
-        maxTime: 30,
-      },
-    }),
-    ...testQueryB(lng, lat, distance),
-    b.cycle(),
-    b.complete()
-  );
+  while (repeat++ < benchRepeat + 1) {
+    // Query A case
+    lng = randomLng();
+    lat = randomEPSG3857Lat();
+    title = `Query A - ${repeat}`;
+    console.log("%s\nlng: %f, lat: %f", title, lng, lat);
+    fs.writeFileSync(`./results/${title}.input`, JSON.stringify({ lng, lat }));
+    for (const database of Object.values(databases)) {
+      let data = await database.queryA(lng, lat);
+      console.log("%s => %s", database.name(), data);
+    }
+    await b.suite(
+      title,
+      b.configure({
+        cases: {
+          minSamples: 20,
+          minTime: 5,
+          maxTime: 20,
+        },
+      }),
+      ...testQueryA(lng, lat),
+      b.cycle(),
+      b.complete(),
+      b.save({ file: `${title}`, folder: "results", details: true })
+    );
 
-  // Query C case
-  testPoint = data[Math.floor(Math.random() * data.length)];
-  while (!isValidEPSG3857Lat(testPoint.lat)) {
+    // Query B case
     testPoint = data[Math.floor(Math.random() * data.length)];
-  }
-  lng = testPoint.lng;
-  lat = testPoint.lat;
-  distance = Math.random() * 100;
-  console.log(
-    "\n\nQuery C\nlng: %f, lat: %f, distance: %f km",
-    lng,
-    lat,
-    distance
-  );
-  for (const database of Object.values(databases)) {
-    let data = await database.queryC(lng, lat, distance);
+    while (!isValidEPSG3857Lat(testPoint.lat)) {
+      testPoint = data[Math.floor(Math.random() * data.length)];
+    }
+    lng = testPoint.lng;
+    lat = testPoint.lat;
+    distance = Math.random() * 100;
+    title = `Query B - ${repeat}`;
     console.log(
-      "%s => %d => %s",
-      database.name(),
-      data.length,
-      data[data.length - 1]
+      "%s\nlng: %f, lat: %f, distance: %f km",
+      title,
+      lng,
+      lat,
+      distance
+    );
+    fs.writeFileSync(
+      `./results/${title}.input`,
+      JSON.stringify({ lng, lat, distance })
+    );
+    for (const database of Object.values(databases)) {
+      let data = await database.queryB(lng, lat, distance);
+      console.log("%s => %d", database.name(), data.length);
+    }
+    await b.suite(
+      title,
+      b.configure({
+        cases: {
+          minSamples: 20,
+          minTime: 5,
+          maxTime: 20,
+        },
+      }),
+      ...testQueryB(lng, lat, distance),
+      b.cycle(),
+      b.complete(),
+      b.save({ file: `${title}`, folder: "results", details: true })
+    );
+
+    // Query C case
+    testPoint = data[Math.floor(Math.random() * data.length)];
+    while (!isValidEPSG3857Lat(testPoint.lat)) {
+      testPoint = data[Math.floor(Math.random() * data.length)];
+    }
+    lng = testPoint.lng;
+    lat = testPoint.lat;
+    distance = Math.random() * 100;
+    title = `Query C - ${repeat}`;
+    console.log(
+      "%s\nlng: %f, lat: %f, distance: %f km",
+      title,
+      lng,
+      lat,
+      distance
+    );
+    fs.writeFileSync(
+      `./results/${title}.input`,
+      JSON.stringify({ lng, lat, distance })
+    );
+    for (const database of Object.values(databases)) {
+      let data = await database.queryC(lng, lat, distance);
+      console.log(
+        "%s => %d => %s",
+        database.name(),
+        data.length,
+        data[data.length - 1]
+      );
+    }
+    await b.suite(
+      title,
+      b.configure({
+        cases: {
+          minSamples: 20,
+          minTime: 5,
+          maxTime: 20,
+        },
+      }),
+      ...testQueryC(lng, lat, distance),
+      b.cycle(),
+      b.complete(),
+      b.save({ file: `${title}`, folder: "results", details: true })
     );
   }
-  await b.suite(
-    "Query C",
-    b.configure({
-      cases: {
-        minSamples: 1000,
-        maxTime: 30,
-      },
-    }),
-    ...testQueryC(lng, lat, distance),
-    b.cycle(),
-    b.complete()
-  );
+
+  // Write testdata
+  const csvTitle = "id,lng,lat";
+  const csvData = data.map((d) => `${d.id},${d.lng},${d.lat}`).join("\n");
+  fs.writeFileSync(`./results/testdata.csv`, `${csvTitle}\n${csvData}`);
 
   resolve();
 }).then(() => process.exit());

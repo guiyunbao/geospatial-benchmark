@@ -4,22 +4,23 @@
 
 - Databases
   - [MongoDB](https://www.mongodb.com/) Community Edition@latest
-  - [Redis](https://redis.io/)
+  - [Redis](https://redis.io/) Stack@latest
 - Programming Language and lib
   - [TypeScript](https://www.typescriptlang.org/)
     - [Mongoose](https://mongoosejs.com/)
+    - [Redis OM](https://github.com/redis/redis-om-node)
 - Host
   - [GitHub Codespaces](https://docs.github.com/en/codespaces)
   - [GitHub Actions](https://docs.github.com/en/actions)
 
 ## Run Benchmarks
 
-```sh
+```log
 npm run start [-- [options]]
 
-Options:
-  -t, --type <type>    type of dataset ["inat2017", "random", "grid", "cluster"] (default: "inat2017")
-  -c, --count <count>  number of data points (default: "100000")
+  -t, --type <type>     type of dataset ["inat2017", "random", "grid", "cluster"] (default: "inat2017")
+  -c, --count <count>   number of data points (default: "100000")
+  -r, --repeat <count>  number of repeat (default: "1")
 ```
 
 ## Test dataset
