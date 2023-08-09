@@ -62,10 +62,8 @@ export class RedisGeohash extends TestDatabase {
     return (
       (locations as any).map(transformLocationGeohash)[0] ?? {
         id: `Out_Of_Range(${closestLimit}km)`,
-        location: {
-          longitude: 0,
-          latitude: 0,
-        },
+        lng: 0,
+        lat: 0,
       }
     );
   }
