@@ -20,7 +20,7 @@ export class RedisGeohash extends TestDatabase {
   }
 
   async connect(uri?: string | undefined): Promise<void> {
-    this.redis = createClient({ url: uri ?? this.uri ?? 'redis://127.0.0.1:6379' })
+    this.redis = createClient({ url: uri ?? this.uri ?? 'redis://127.0.0.1:6380' })
     await this.redis.connect();
     this.repository = new Repository(locationSchema, this.redis)
   }
@@ -38,7 +38,6 @@ export class RedisGeohash extends TestDatabase {
     await this.redis.GEOADD('location', docs);
   }
   async prepare(): Promise<void> {
-    // await this.repository!.createIndex();
   }
 
   async usageReport(): Promise<Object> {
