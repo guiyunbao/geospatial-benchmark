@@ -9,7 +9,7 @@ export class StubDatabase extends TestDatabase {
   async connect(uri?: string | undefined): Promise<void> {}
   async disconnect(): Promise<void> {}
   async cleanup(): Promise<void> {}
-  async create(data: TestData[]): Promise<void> {}
+  async create(data: Array<TestData>): Promise<void> {}
   async prepare(): Promise<void> {}
   async usageReport(): Promise<object> {
     return {};
@@ -27,7 +27,7 @@ export class StubDatabase extends TestDatabase {
     lng: number,
     lat: number,
     maxDistance: number
-  ): Promise<TestData[]> {
+  ): Promise<Array<TestData>> {
     return [
       {
         id: "stub",
@@ -41,7 +41,7 @@ export class StubDatabase extends TestDatabase {
     lng: number,
     lat: number,
     maxDistance: number
-  ): Promise<TestData[]> {
+  ): Promise<Array<TestData>> {
     return [
       {
         id: "stub",

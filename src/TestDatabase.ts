@@ -27,7 +27,7 @@ export abstract class TestDatabase {
    * Initialize DB with data
    * @param data
    */
-  abstract create(data: TestData[]): Promise<void>;
+  abstract create(data: Array<TestData>): Promise<void>;
 
   /**
    * Prepare DB for query

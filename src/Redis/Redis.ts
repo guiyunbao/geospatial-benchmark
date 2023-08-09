@@ -4,7 +4,7 @@ import { TestDatabase } from "../TestDatabase";
 import { transformLocation, transformTestData } from "./Transformer";
 import { Latitude, Longitude } from "../utils";
 import { Repository } from "redis-om";
-import { locationSchema } from "./Locations";
+import { locationSchema, Location } from "./Locations";
 
 export class Redis extends TestDatabase {
   redis: any;
@@ -35,7 +35,7 @@ export class Redis extends TestDatabase {
     await this.redis.flushAll();
   }
 
-  async create(data: TestData[]): Promise<void> {
+  async create(data: Array<TestData>): Promise<void> {
     const docs = data.map(transformTestData);
     let index = 0;
     while (index < docs.length) {
@@ -62,7 +62,7 @@ export class Redis extends TestDatabase {
       )
       .return.first();
     return transformLocation(
-      (location! as any) ?? {
+      (location! as unknown as Location) ?? {
         id: `Out_Of_Range(${closestLimit}km)`,
         location: {
           longitude: 0,
@@ -76,7 +76,7 @@ export class Redis extends TestDatabase {
     lng: Longitude,
     lat: Latitude,
     maxDistance: number
-  ): Promise<TestData[]> {
+  ): Promise<Array<TestData>> {
     const locations = await this.repository!.search()
       .where("location")
       .inRadius(
@@ -84,14 +84,14 @@ export class Redis extends TestDatabase {
           circle.longitude(lng).latitude(lat).radius(maxDistance).kilometers
       )
       .return.first();
-    return (locations as any).map(transformLocation);
+    return (locations as unknown as Array<Location>).map(transformLocation);
   }
 
   async queryC(
     lng: Longitude,
     lat: Latitude,
     maxDistance: number
-  ): Promise<TestData[]> {
+  ): Promise<Array<TestData>> {
     const locations = await this.repository!.search()
       .where("location")
       .inRadius(
@@ -99,6 +99,6 @@ export class Redis extends TestDatabase {
           circle.longitude(lng).latitude(lat).radius(maxDistance).kilometers
       )
       .return.first();
-    return (locations as any).map(transformLocation);
+    return (locations as unknown as Array<Location>).map(transformLocation);
   }
 }

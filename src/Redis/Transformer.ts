@@ -25,7 +25,7 @@ export function transformTestData(data: TestData): Location {
 export function transformLocation(location: Location): TestData {
   return {
     id: location.id,
-    lng: location.location["longitude"],
-    lat: location.location["latitude"],
+    lng: location.location.longitude,
+    lat: location.location.latitude,
   };
 }

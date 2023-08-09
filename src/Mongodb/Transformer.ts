@@ -6,7 +6,7 @@ export function transformTestData(data: TestData): Location {
     id: data.id,
     location: {
       type: "Point",
-      coordinates: [data.lng, data.lat],
+      coordinates: [+data.lng, +data.lat],
     },
   };
 }

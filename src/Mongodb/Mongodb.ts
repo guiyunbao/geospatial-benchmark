@@ -31,7 +31,7 @@ export class MongoDB extends TestDatabase {
   }
 
   // Chunked insert to avoid OOM
-  async create(data: TestData[]): Promise<void> {
+  async create(data: Array<TestData>): Promise<void> {
     const chunkSize = 100000;
     const docs = data.map(transformTestData);
     let index = 0;
@@ -73,7 +73,7 @@ export class MongoDB extends TestDatabase {
     lng: Longitude,
     lat: Latitude,
     maxDistance: number
-  ): Promise<TestData[]> {
+  ): Promise<Array<TestData>> {
     const locations = await LocationModel.find(
       {
         location: {
@@ -98,7 +98,7 @@ export class MongoDB extends TestDatabase {
     lng: Longitude,
     lat: Latitude,
     maxDistance: number
-  ): Promise<TestData[]> {
+  ): Promise<Array<TestData>> {
     const locations = await LocationModel.find(
       {
         location: {
