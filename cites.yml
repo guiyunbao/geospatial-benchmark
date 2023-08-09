@@ -1,0 +1,15 @@
+DB_Rank:
+  type: article
+  url: https://db-engines.com/en/ranking
+
+MongoDBWiki:
+  type: article
+  url: https://en.wikipedia.org/wiki/MongoDB
+
+RedisWiki:
+  type: article
+  url: https://en.wikipedia.org/wiki/Redis
+
+RedisStackIntro:
+  type: article
+  url: https://redis.io/docs/about/about-stack/
