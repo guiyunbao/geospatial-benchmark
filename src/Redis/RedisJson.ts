@@ -5,14 +5,19 @@ import { Latitude, Longitude } from "../utils";
 import { Repository } from "redis-om";
 import { LocationJson, locationSchema } from "./Locations";
 import { transformLocationJson, transformTestDataJson } from "./Transformer";
+import distance from "@turf/distance";
 
 export class RedisJson extends TestDatabase {
-  redis: any;
-  repository?: Repository;
   uri?: string;
+  redis: ReturnType<typeof createClient>;
+  repository?: Repository;
+
   constructor(uri?: string) {
     super();
     this.uri = uri;
+    this.redis = createClient({
+      url: uri ?? this.uri ?? "redis://localhost:6379/",
+    });
   }
 
   name(): string {
@@ -62,7 +67,7 @@ export class RedisJson extends TestDatabase {
       )
       .return.first();
     return transformLocationJson(
-      (location! as unknown as LocationJson) ?? {
+      (location as unknown as LocationJson) ?? {
         id: `Out_Of_Range(${closestLimit}km)`,
         location: {
           longitude: 0,
@@ -84,7 +89,9 @@ export class RedisJson extends TestDatabase {
           circle.longitude(lng).latitude(lat).radius(maxDistance).kilometers
       )
       .return.all();
-    return (locations as unknown as Array<LocationJson>).map(transformLocationJson);
+    return (locations as unknown as Array<LocationJson>).map(
+      transformLocationJson
+    );
   }
 
   async queryC(
@@ -99,6 +106,13 @@ export class RedisJson extends TestDatabase {
           circle.longitude(lng).latitude(lat).radius(maxDistance).kilometers
       )
       .return.all();
-    return (locations as unknown as Array<LocationJson>).map(transformLocationJson);
+    return (locations as unknown as Array<LocationJson>)
+      .map(transformLocationJson)
+      .map((e) =>
+        Object.assign(e, {
+          distance: distance([lng, lat], [e.lng, e.lat]), // Sort at client side.
+        })
+      )
+      .sort((a, b) => a.distance - b.distance);
   }
 }

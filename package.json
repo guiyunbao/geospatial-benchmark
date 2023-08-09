@@ -9,6 +9,7 @@
   },
   "license": "CC BY-SA 4.0",
   "dependencies": {
+    "@turf/distance": "^6.5.0",
     "benny": "^3.7.1",
     "commander": "^11.0.0",
     "csv": "^6.3.1",
