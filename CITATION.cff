@@ -4,9 +4,12 @@ authors:
 - family-names: "Shen"
   given-names: "LiangXiang"
   url: "https://github.com/kj415j45"
+  email: "kj415j45@gmail.com"
+  affiliation: "Guangxi GuiYunBao Tech Inc."
 - family-names: "Zhou"
   given-names: "Feng"
   url: "https://github.com/guimasharing"
-title: "geospatial-benchmark"
+  affiliation: "Guangxi GuiYunBao Tech Inc."
+title: "Benchmark geospatial query performance on NoSQL(-like) databases"
 version: 1.0.0
 url: "https://github.com/guiyunbao/geospatial-benchmark"

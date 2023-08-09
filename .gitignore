@@ -7,4 +7,6 @@
 /results/*.json
 /results/*.csv
 
+*.pdf
+
 .env
