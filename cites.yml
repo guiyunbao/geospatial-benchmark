@@ -13,3 +13,54 @@ RedisWiki:
 RedisStackIntro:
   type: article
   url: https://redis.io/docs/about/about-stack/
+
+RedisGeoadd:
+  type: article
+  url: https://redis.io/commands/geoadd/
+
+ErrorInProjection:
+  type: article
+  doi: 10.1155/2021/1094602
+  url: https://www.hindawi.com/journals/mpe/2021/1094602/
+  title: Approximations, Errors, and Misconceptions in the Use of Map Projections
+  author: 
+    - "Sergio Baselga"
+    - "Michael J. Olsen"
+  editor: 
+    - "Qianxin Wang"
+  page-total: 12
+  parent:
+    title: Mathematical Problems in Engineering
+    type: periodical
+    publisher: Hindawi
+    volume: 2021
+
+iNaturalist:
+  type: article
+  url: https://www.inaturalist.org/pages/help#general1
+
+fg_geo:
+  type: article
+  title: Geo-Aware Networks for Fine Grained Recognition
+  author:
+    - Grace Chu
+    - Brian Potetz
+    - Weijun Wang
+    - Andrew Howard
+    - Yang Song
+    - Fernando Brucher
+    - Thomas Leung
+    - Hartwig Adam
+  year: 2019
+  url: https://doi.org/10.48550/arXiv.1906.01737
+  doi: 10.48550/arXiv.1906.01737
+
+FibonacciSphereAlgo:
+  type: article
+  title: Data Structure and Parallel Decomposition Considerations on a Fibonacci Grid
+  author: 
+    - John Michalakes
+    - James Purser
+    - Richard Swinbank
+  year: 1999
+  url: https://api.semanticscholar.org/CorpusID:116908365
