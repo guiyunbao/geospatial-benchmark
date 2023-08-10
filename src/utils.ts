@@ -1,4 +1,5 @@
 import { TestData } from "./TestData";
+import { TestDatabase } from "./TestDatabase";
 
 export const delay = (seconds: number) =>
   new Promise((resolve) => setTimeout(resolve, seconds * 1000));
@@ -14,7 +15,7 @@ export function randomLat() {
 export const EPSG3857LatLimit = 85.05112878;
 
 export function randomEPSG3857Lat() {
-  return (EPSG3857LatLimit * Math.random()) * (Math.random() > 0.5 ? 1 : -1);
+  return EPSG3857LatLimit * Math.random() * (Math.random() > 0.5 ? 1 : -1);
 }
 
 export function isValidEPSG3857Lat(lat: number): boolean {
@@ -125,4 +126,15 @@ export function shuffle<T>(array: Array<T>): Array<T> {
   }
 
   return array;
+}
+
+export async function importData(
+  database: TestDatabase,
+  data: Array<TestData>
+): Promise<ReturnType<typeof database.usageReport>> {
+  await database.connect();
+  await database.cleanup();
+  await database.create(data);
+  await database.prepare();
+  return database.usageReport();
 }

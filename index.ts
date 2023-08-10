@@ -13,6 +13,7 @@ import {
   generateSample,
   isValidEPSG3857Lat,
   randomEPSG3857Lat,
+  importData,
 } from "./src/utils";
 import { Command } from "commander";
 import { RedisJson } from "./src/Redis/RedisJson";
@@ -69,19 +70,13 @@ new Promise<void>(async (resolve, reject) => {
   // Setup the databases
   await Promise.all(
     Object.values(databases).map((database) =>
-      database
-        .connect()
-        .then(() => database.cleanup())
-        .then(() => database.create(data))
-        .then(() => database.prepare())
-        .then(() => database.usageReport())
-        .then((report) =>
-          console.log(
-            "Database %s is ready.\nUsage report:\n%s",
-            database.name(),
-            report
-          )
+      importData(database, data).then((report) =>
+        console.log(
+          "Database %s is ready.\nUsage report:\n%s",
+          database.name(),
+          report
         )
+      )
     )
   );
 
@@ -110,16 +105,34 @@ new Promise<void>(async (resolve, reject) => {
   console.log("Start benchmarking...  (repeat: %d)", benchRepeat);
 
   while (++repeat <= benchRepeat) {
-    // Query A case
+    await queryA();
+
+    await queryB();
+
+    await queryC();
+  }
+
+  // Write testdata
+  const csvTitle = "id,lng,lat";
+  const csvData = data.map((d) => `${d.id},${d.lng},${d.lat}`).join("\n");
+  fs.writeFileSync(`./results/testdata.csv`, `${csvTitle}\n${csvData}`);
+
+  resolve();
+
+  async function queryA() {
     lng = randomLng();
     lat = randomEPSG3857Lat();
     title = `Query A - ${repeat}`;
+    let output = "";
     console.log("%s\nlng: %f, lat: %f", title, lng, lat);
     fs.writeFileSync(`./results/${title}.input`, JSON.stringify({ lng, lat }));
     for (const database of Object.values(databases)) {
       let data = await database.queryA(lng, lat);
-      console.log("%s => %s", database.name(), data);
+      let message = `${database.name()} => ${data}`;
+      console.log(message);
+      output += message + "\n";
     }
+    fs.writeFileSync(`./results/${title}.output`, output);
     await b.suite(
       title,
       b.configure({
@@ -133,8 +146,9 @@ new Promise<void>(async (resolve, reject) => {
       b.complete(),
       b.save({ file: `${title}`, folder: "results", details: true })
     );
+  }
 
-    // Query B case
+  async function queryB() {
     testPoint = data[Math.floor(Math.random() * data.length)];
     while (!isValidEPSG3857Lat(testPoint.lat)) {
       testPoint = data[Math.floor(Math.random() * data.length)];
@@ -143,6 +157,7 @@ new Promise<void>(async (resolve, reject) => {
     lat = testPoint.lat;
     distance = Math.random() * 100;
     title = `Query B - ${repeat}`;
+    let output = "";
     console.log(
       "%s\nlng: %f, lat: %f, distance: %f km",
       title,
@@ -156,8 +171,11 @@ new Promise<void>(async (resolve, reject) => {
     );
     for (const database of Object.values(databases)) {
       let data = await database.queryB(lng, lat, distance);
-      console.log("%s => %d", database.name(), data.length);
+      let message = `${database.name()} => ${data.length}`;
+      console.log(message);
+      output += message + "\n";
     }
+    fs.writeFileSync(`./results/${title}.output`, output);
     await b.suite(
       title,
       b.configure({
@@ -171,8 +189,9 @@ new Promise<void>(async (resolve, reject) => {
       b.complete(),
       b.save({ file: `${title}`, folder: "results", details: true })
     );
+  }
 
-    // Query C case
+  async function queryC() {
     testPoint = data[Math.floor(Math.random() * data.length)];
     while (!isValidEPSG3857Lat(testPoint.lat)) {
       testPoint = data[Math.floor(Math.random() * data.length)];
@@ -181,6 +200,7 @@ new Promise<void>(async (resolve, reject) => {
     lat = testPoint.lat;
     distance = Math.random() * 100;
     title = `Query C - ${repeat}`;
+    let output = "";
     console.log(
       "%s\nlng: %f, lat: %f, distance: %f km",
       title,
@@ -194,13 +214,13 @@ new Promise<void>(async (resolve, reject) => {
     );
     for (const database of Object.values(databases)) {
       let data = await database.queryC(lng, lat, distance);
-      console.log(
-        "%s => %d => %s",
-        database.name(),
-        data.length,
+      let message = `${database.name()} => ${data.length} => ${
         data[data.length - 1]
-      );
+      }`;
+      console.log(message);
+      output += message + "\n";
     }
+    fs.writeFileSync(`./results/${title}.output`, output);
     await b.suite(
       title,
       b.configure({
@@ -215,11 +235,4 @@ new Promise<void>(async (resolve, reject) => {
       b.save({ file: `${title}`, folder: "results", details: true })
     );
   }
-
-  // Write testdata
-  const csvTitle = "id,lng,lat";
-  const csvData = data.map((d) => `${d.id},${d.lng},${d.lat}`).join("\n");
-  fs.writeFileSync(`./results/testdata.csv`, `${csvTitle}\n${csvData}`);
-
-  resolve();
 }).then(() => process.exit());
