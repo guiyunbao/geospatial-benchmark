@@ -141,7 +141,7 @@ new Promise<void>(async (resolve, reject) => {
           maxTime: 20,
         },
       }),
-      ...testQueryA(lng, lat),
+      ...shuffle(testQueryA(lng, lat)),
       b.cycle(),
       b.complete(),
       b.save({ file: `${title}`, folder: "results", details: true })
@@ -184,7 +184,7 @@ new Promise<void>(async (resolve, reject) => {
           maxTime: 20,
         },
       }),
-      ...testQueryB(lng, lat, distance),
+      ...shuffle(testQueryB(lng, lat, distance)),
       b.cycle(),
       b.complete(),
       b.save({ file: `${title}`, folder: "results", details: true })
@@ -229,7 +229,7 @@ new Promise<void>(async (resolve, reject) => {
           maxTime: 20,
         },
       }),
-      ...testQueryC(lng, lat, distance),
+      ...shuffle(testQueryC(lng, lat, distance)),
       b.cycle(),
       b.complete(),
       b.save({ file: `${title}`, folder: "results", details: true })
