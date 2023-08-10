@@ -3,9 +3,7 @@
 
 /test.*
 
-/results/*.input
-/results/*.json
-/results/*.csv
+/results/*
 
 *.pdf
 
