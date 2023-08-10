@@ -38,11 +38,21 @@ export class RedisGeohash extends TestDatabase {
     await this.redis.flushAll();
   }
 
+  // Chunked insert to avoid OOM
   async create(data: Array<TestData>): Promise<void> {
+    const chunkSize = 100000;
     const docs = data.map(transformTestDataGeohash);
-    await this.redis.GEOADD("location", docs);
+    let index = 0;
+    while (index < docs.length) {
+      const chunk = docs.slice(index, index + chunkSize);
+      await this.redis.GEOADD("location", chunk);
+      index += chunkSize;
+    }
   }
-  async prepare(): Promise<void> {}
+
+  async prepare(): Promise<void> {
+    await this.redis.bgSave();
+  }
 
   async usageReport(): Promise<Object> {
     let stats = await this.redis.info("memory");

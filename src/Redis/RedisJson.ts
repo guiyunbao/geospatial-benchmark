@@ -49,6 +49,7 @@ export class RedisJson extends TestDatabase {
   }
   async prepare(): Promise<void> {
     await this.repository!.createIndex();
+    await this.redis.bgSave();
   }
 
   async usageReport(): Promise<Object> {
