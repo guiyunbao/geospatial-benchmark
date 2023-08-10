@@ -44,6 +44,7 @@ export class RedisJson extends TestDatabase {
       await this.repository!.save(docs[index++]!);
     }
   }
+
   async prepare(): Promise<void> {
     await this.repository!.createIndex();
     await this.redis.bgSave();

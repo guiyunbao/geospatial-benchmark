@@ -42,7 +42,7 @@ export class RedisGeohash extends TestDatabase {
     let index = 0;
     while (index < docs.length) {
       const chunk = docs.slice(index, index + chunkSize);
-      await this.redis.GEOADD("location", chunk);
+      await this.redis.geoAdd("location", chunk);
       index += chunkSize;
     }
   }
