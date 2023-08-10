@@ -18,6 +18,7 @@ import {
 import { Command } from "commander";
 import { RedisJson } from "./src/Redis/RedisJson";
 import { RedisGeohash } from "./src/Redis/RedisGeohash";
+import { StubDatabase } from "./src/StubDatabase";
 
 const program = new Command("geospatial-benchmark");
 
@@ -42,6 +43,7 @@ const databases: {
   mongo: new MongoDB(),
   redisJson: new RedisJson(),
   redisGeohash: new RedisGeohash(),
+  stub: new StubDatabase(),
 };
 
 let data: Array<TestData>;
@@ -128,7 +130,7 @@ new Promise<void>(async (resolve, reject) => {
     fs.writeFileSync(`./results/${title}.input`, JSON.stringify({ lng, lat }));
     for (const database of Object.values(databases)) {
       let data = await database.queryA(lng, lat);
-      let message = `${database.name()} => ${data}`;
+      let message = `${database.name()} => ${JSON.stringify(data)}`;
       console.log(message);
       output += message + "\n";
     }
@@ -214,9 +216,9 @@ new Promise<void>(async (resolve, reject) => {
     );
     for (const database of Object.values(databases)) {
       let data = await database.queryC(lng, lat, distance);
-      let message = `${database.name()} => ${data.length} => ${
+      let message = `${database.name()} => ${data.length} => ${JSON.stringify(
         data[data.length - 1]
-      }`;
+      )}`;
       console.log(message);
       output += message + "\n";
     }
