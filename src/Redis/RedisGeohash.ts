@@ -8,14 +8,14 @@ import {
 import { Latitude, Longitude } from "../utils";
 
 export class RedisGeohash extends TestDatabase {
-  uri?: string;
+  uri: string;
   redis: ReturnType<typeof createClient>;
 
   constructor(uri?: string) {
     super();
-    this.uri = uri;
+    this.uri = uri ?? "redis://127.0.0.1:6380";
     this.redis = createClient({
-      url: uri ?? this.uri ?? "redis://127.0.0.1:6380",
+      url: this.uri,
     });
   }
 
@@ -24,9 +24,6 @@ export class RedisGeohash extends TestDatabase {
   }
 
   async connect(uri?: string | undefined): Promise<void> {
-    this.redis = createClient({
-      url: uri ?? this.uri ?? "redis://localhost:6379/",
-    });
     await this.redis.connect();
   }
 

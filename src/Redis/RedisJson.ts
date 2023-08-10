@@ -8,15 +8,15 @@ import { transformLocationJson, transformTestDataJson } from "./Transformer";
 import distance from "@turf/distance";
 
 export class RedisJson extends TestDatabase {
-  uri?: string;
+  uri: string;
   redis: ReturnType<typeof createClient>;
   repository?: Repository;
 
   constructor(uri?: string) {
     super();
-    this.uri = uri;
+    this.uri = uri ?? "redis://localhost:6379/";
     this.redis = createClient({
-      url: uri ?? this.uri ?? "redis://localhost:6379/",
+      url: this.uri,
     });
   }
 
@@ -25,9 +25,6 @@ export class RedisJson extends TestDatabase {
   }
 
   async connect(uri?: string | undefined): Promise<void> {
-    this.redis = createClient({
-      url: uri ?? this.uri ?? "redis://localhost:6379/",
-    });
     await this.redis.connect();
     this.repository = new Repository(locationSchema, this.redis);
   }
