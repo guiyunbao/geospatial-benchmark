@@ -72,13 +72,17 @@ new Promise<void>(async (resolve, reject) => {
   // Setup the databases
   await Promise.all(
     Object.values(databases).map((database) =>
-      importData(database, data).then((report) =>
+      importData(database, data).then((report) => {
         console.log(
           "Database %s is ready.\nUsage report:\n%s",
           database.name(),
           report
-        )
-      )
+        );
+        fs.writeFileSync(
+          `./results/${database.name()}.report`,
+          JSON.stringify(report)
+        );
+      })
     )
   );
 

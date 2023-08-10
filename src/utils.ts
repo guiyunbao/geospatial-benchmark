@@ -131,7 +131,7 @@ export function shuffle<T>(array: Array<T>): Array<T> {
 export async function importData(
   database: TestDatabase,
   data: Array<TestData>
-): Promise<ReturnType<typeof database.usageReport>> {
+): ReturnType<typeof database.usageReport> {
   await database.connect();
   await database.cleanup();
   await database.create(data);
