@@ -1,13 +1,16 @@
 # Benchmark geospatial query performance on NoSQL(-like) databases
 
+The full paper can be found in [Releases](https://github.com/guiyunbao/geospatial-benchmark/releases). Source paper can be found at [report.typ](./report.typ). You may want to compile it with [typst](https://github.com/typst/typst).
+
 ## Test Environment
 
 - Databases
-  - [MongoDB](https://www.mongodb.com/) Community Edition@latest
-  - [Redis](https://redis.io/) Stack@latest
+  - [MongoDB](https://www.mongodb.com/) Enterprise Server@latest
+  - [Redis](https://redis.io/) (Stack)@latest
 - Programming Language and lib
   - [TypeScript](https://www.typescriptlang.org/)
     - [Mongoose](https://mongoosejs.com/)
+    - [node-redis](https://redis.js.org/)
     - [Redis OM](https://github.com/redis/redis-om-node)
 - Host
   - [GitHub Codespaces](https://docs.github.com/en/codespaces)
@@ -73,4 +76,4 @@ Pick a random location from the dataset, find all locations within certain dista
 
 This project is licensed under the terms of the [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) license.
 
-Citation info can be found at [CITATION.cff](./CITATION.cff)
+To cite this report, check [CITATION.cff](./CITATION.cff).

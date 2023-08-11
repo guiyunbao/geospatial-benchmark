@@ -90,26 +90,6 @@ Generally, the benchmark should be as close to the actual use case as possible. 
 
 There are some challenges while benchmarking. These challenges expose the real development issues that we may encounter in the future. We will talk about them later.
 
-== Limitation
-
-Due to complexity, serveral limitaions are found during the benchmark.
-
-=== Coordinate System
-
-Redis uses EPSG:3857 #footnote[https://epsg.io/3857], as known as _Pseudo-Mercator_ or _Web Mercator_, as the coordinate system @RedisGeoadd.
-This coordinate system is not including the area near the poles. So trying to insert a point near the poles will fail.
-In this benchmark, *while inserting points into Redis, if a point is near the poles, we will move it to a valid EPSG:3857 latitude*.
-
-It is worth mentioning that this system may not reflect actual ground distance as its projection is not perfect for Earth. *Though some reports say it has a 0.7% error rate @ErrorInProjection, we will ignore the error as it is far beyond our purpose.*
-
-MongoDB uses EPSG:4326 #footnote[https://epsg.io/4326], as known as _WGS84_ which is used in _GPS_. It's not affected by those previously mentioned issues.
-
-=== Query
-
-In Redis, querying around a geo point requires radius as one of the parameters. If the radius is too large, the query will be slow. *For simulating actual use cases, we will use 100 kilometers as the maximum radius while querying in Redis.*
-
-*All queries will use a valid EPSG:3857 coordinate.*
-
 == Test Data
 
 === iNaturalist 2017
@@ -121,7 +101,7 @@ We found a dataset with the geolocation that we needed for the benchmark called 
 
 === Generated Data
 
-To simulate some edge cases, we generated 3 different type of datasets.
+To simulate some edge cases, we generated 3 different types of datasets.
 
 ==== Random
 
@@ -133,7 +113,7 @@ Generated points with Fibonacci Sphere Algorithm @FibonacciSphereAlgo. It is a m
 
 ==== Cluster
 
-Every 50 points will be consider as a cluster and will be placed around a random center on earch with short radius. All points will be generated in the range of EPSG:4326.
+Every 50 points will be considered as a cluster and will be placed around a random center on earch with short radius. All points will be generated in the range of EPSG:4326.
 
 == Test Environment
 
@@ -148,11 +128,88 @@ GitHub Actions #footnote[https://github.com/features/actions] is used for benchm
 - Redis \@ latest #footnote[https://hub.docker.com/_/redis]
   - Stack Server \@ latest #footnote[https://hub.docker.com/r/redis/redis-stack-server]
 
+=== Tools
+
+Source code used in the benchmark can be found in guiyunbao/geospatial-benchmark #footnote[https://github.com/guiyunbao/geospatial-benchmark] repository.
+
+=== Test cases
+
+==== Case A
+
+Pick a random point on earth, find the closest location in the dataset.
+
+This case is the most common use case for geospatial query. It is used to find the closest location to the user.
+
+==== Case B
+
+Pick a random location from the dataset, find all locations within certain distance.
+
+This case is used to find all locations within a certain distance from the user. Also measure the bandwidth of the database as the result may be large.
+
+==== Case C
+
+Pick a random location from the dataset, find all locations within certain distance, order by distance.
+
+This case is used to measure the performance of sorting by distance.
+
+== Limitation
+
+Due to complexity, several limitations are found during the benchmark. All patch that we made to ensure the test suite run correctly will be listed below.
+
+=== Coordinate System
+
+Redis uses EPSG:3857 #footnote[https://epsg.io/3857], as known as _Pseudo-Mercator_ or _Web Mercator_, as the coordinate system @RedisGeoadd.
+This coordinate system is not including the area near the poles. So trying to insert a point near the poles will fail.
+In this benchmark, *while inserting points into Redis, if a point is near the poles, we will move it to a valid EPSG:3857 latitude*.
+
+It is worth mentioning that this system may not reflect actual ground distance as its projection is not perfect for Earth. *Though some reports say it has a 0.7% error rate @ErrorInProjection, we will ignore the error as it is far beyond our purpose.*
+
+MongoDB uses EPSG:4326 #footnote[https://epsg.io/4326], as known as _WGS84_ which is used in _GPS_. It's not affected by the issue.
+
+=== Query
+
+In Redis, querying around a geo point requires radius as one of the parameters. If the radius is too large, the query will be slow. *For simulating actual use cases, we will use 100 kilometers as the maximum radius while querying in Redis.*
+
+*All queries will use a valid EPSG:3857 coordinate.*
+
+In Redis Stack, there is no way to evaluate distance between two points. And it is not possible to order them during query. So *Redis Stack will calulate the distance and order them in the application layer in Test Case C.*
+
 == Test Result
 
-= Analyze
+Due to limited time, we do not make a chart or numberic analysis here. But all raw data can be found in GitHub Action logs #footnote[https://github.com/guiyunbao/geospatial-benchmark/actions/workflows/dispatch.yml]. You can also fork the repository and run the benchmark by yourself.
+
+*Redis is the fastest in all cases*, followed by MongoDB and Redis Stack. *Most of the time, MongoDB is better than Redis Stack.*
+
+=== Analyze by Test Cases
+
+In most test case, Redis is dominating the benchmark. It is at least 5x faster than MongoDB, 10x faster then Redis Stack.
+And it seems that sorting by distance did not impact performance in all databases. Even though Redis Stack is sorting them at the application layer.
+
+=== Analyze by Datasets
+
+Manually generated datasets are used to simulate some edge cases. They exposed that Redis family can not handle area around poles properly.
+
+==== iNaturalist 2017 and Cluster
+
+Both datasets simulate the real world use cases. PoI may be clustered in some area. And the dataset may be large. All databases are suffering a bandwidth issue in Test Case B and C, ops/sec is significantly decreasing.
+
+==== Random
+
+Randomly distributed points are not a common case. But still worth to test. Databases can not take advantage by grouping or other optimization. So the performance is not as good as other datasets. At a large scale, this is actually like testing on datasets with cities on earth as a point. Do not see any difference on all databases.
+
+==== Grid
+
+Grid is a special case. It is evenly distributed on the surface of a sphere. All Test Case would return a much smaller results which could reflect the actual querying speed. At this point, Redis Stack sometimes faster than MongoDB.
 
 = Conclusion
+
+Raw Redis is the fastest among all databases. With geospatial as index, it runs almost 10x faster than MongoDB, and 20x faster than Redis Stack. But it is not suitable for complex queries. As raw Redis could not set a secondary or more indexes. Neither querying with the value it stored. To achieve same experience like other relational database. Developer have to maintain the foreign key in the application layer which could be expensive and complex. It may also cause data inconsistency and over-use of memory.
+
+MongoDB is somehow a balance to the performance and the complexity. It is not as fast as raw Redis, but it is still fast enough for most use cases. Its design is more like a relational database. MongoDB supports secondary indexes and querying with the value it stored. It also supports complex queries like aggregation. There is a In-Memory Storage Engine #footnote[https://www.mongodb.com/docs/manual/core/inmemory/#in-memory-storage-engine] in Enterprise Server but it is not enable by default. It also requires a setup of a replica set to persist the data. That is why it is not cover in this benchmark.
+
+Redis Stack could be a viable choice in the future, but not for now. It is still at a early prototype stage in our opinion. Though it extends the core features of Redis, it becomes not as fast as raw Redis. It tries to implements a document-based database, but its ecosystem is frustrating. At least for Redis OM for JavaScript. The OM can not provide a proper type annotation when querying with the value it stored. Which is implements well in Mongoose.
+
+
 
 #pagebreak(weak: true)
 #bibliography("cites.yml")
