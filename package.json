@@ -14,7 +14,7 @@
     "commander": "^11.0.0",
     "csv": "^6.3.1",
     "geojson": "^0.5.0",
-    "mongoose": "^7.4.0",
+    "mongoose": "^7.5.0",
     "redis-om": "^0.4.0"
   },
   "devDependencies": {
